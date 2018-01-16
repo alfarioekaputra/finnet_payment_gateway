@@ -201,7 +201,7 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
 
 		$mer_signature = hash('sha256', strtoupper($add_info1).'%'.strtoupper($amount).'%'.strtoupper($cust_email).'%'.strtoupper($cust_id).'%'.strtoupper($cust_msisdn).'%'.strtoupper($cust_name).'%'.strtoupper($failed_url).'%'.strtoupper($invoice).'%'.strtoupper($items).'%'.strtoupper($merchant_id).'%'.strtoupper($return_url).'%'.strtoupper($sof_id).'%'.strtoupper($sof_type).'%'.strtoupper($success_url).'%'.strtoupper($timeout).'%'.strtoupper($trans_date).'%'.strtoupper($password));
 		$ref = strtoupper($add_info1).'%'.strtoupper($amount).'%'.strtoupper($cust_email).'%'.strtoupper($cust_id).'%'.strtoupper($cust_msisdn).'%'.strtoupper($cust_name).'%'.strtoupper($failed_url).'%'.strtoupper($invoice).'%'.strtoupper($items).'%'.strtoupper($merchant_id).'%'.strtoupper($return_url).'%'.strtoupper($sof_id).'%'.strtoupper($sof_type).'%'.strtoupper($success_url).'%'.strtoupper($timeout).'%'.strtoupper($trans_date).'%'.strtoupper($password);
-		echo $ref;
+		
 		// This is where the fun stuff begins
 		$payload = array(
 			'add_info1' => $add_info1,

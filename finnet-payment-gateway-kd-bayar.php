@@ -323,7 +323,7 @@ class finnet_payment_kd_bayar extends WC_Payment_Gateway {
 
 add_filter( 'woocommerce_payment_gateways', 'add_custom_gateway_class' );
 	function add_custom_gateway_class( $methods ) {
-		$methods[] = 'cwof_Finnet_Payment'; 
+		$methods[] = 'finnet_payment_kd_bayar'; 
 		return $methods;
 	}
 

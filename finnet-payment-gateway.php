@@ -4,7 +4,7 @@
 Plugin Name: Finnet Payment Gateway
 Plugin URI: http://www.url.com/
 Description: WooCommerce custom payment gateway integration on finnet.
-Version: 1.0
+Version: 1.4
 */
 
 add_action( 'plugins_loaded', 'cwof_finnet_payment_gateway', 0 );
@@ -14,12 +14,14 @@ function cwof_finnet_payment_gateway() {
 	include_once( 'finnet-payment-gateway-kd-bayar.php' );
 	include_once('finnet-payment-gateway-va.php');
 	include_once('finnet-payment-gateway-tcash.php');
+	include_once('finnet-payment-gateway-cc.php');
 	// class add it too WooCommerce
 	add_filter( 'woocommerce_payment_gateways', 'cwof_add_finnet_payment_gateway' );
 	function cwof_add_finnet_payment_gateway( $methods ) {
 		$methods[] = 'finnet_payment_kd_bayar';
 		$methods[] = 'finnet_payment_VA';
 		$methods[] = 'finnet_payment_TCash';
+		$methods[] = 'finnet_payment_CC';
 		return $methods;
 	}
 }
