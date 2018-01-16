@@ -235,7 +235,6 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 		
 		$response = json_decode($response_body, true);
 		
-		var_dump($response);die;
 		if($response['status_code'] == '00'){
 			// Payment successful
 			$customer_order->add_order_note( __( 'Finnet pending payment cc.', 'finnet-tcash' ) );
