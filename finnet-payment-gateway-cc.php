@@ -211,7 +211,6 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 			
         );
         
-		
 		// Send this payload to Authorize.net for processing
 		$response = wp_remote_post( $environment_url, array(
 			'method'    => 'POST',
