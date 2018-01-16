@@ -156,7 +156,7 @@ class finnet_Payment_VA extends WC_Payment_Gateway {
 		// Decide which URL to post to
 		$environment_url = 'https://sandbox.finpay.co.id/servicescode/api/apiFinpay.php';
 
-		$return_url = add_query_arg('utm_nooverride','1',$this->get_return_url($order));
+		$return_url = add_query_arg('utm_nooverride','4',$this->get_return_url($order));
 		//echo $return_url;die;
 		if($_POST['nm_bank'] == 'permata'){
             $sof_id = 'vapermata';
