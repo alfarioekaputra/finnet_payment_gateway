@@ -179,8 +179,8 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
 		// Decide which URL to post to
 		$environment_url = 'https://sandbox.finpay.co.id/servicescode/api/apiFinpay.php';
 
-		$return_url = add_query_arg('utm_nooverride','1',$this->get_return_url($order));
-		$failed_url = add_query_arg('failed','1',$this->get_return_url($order));
+		$return_url = add_query_arg('utm_nooverride','1',$this->get_return_url($customer_order));
+		$failed_url = add_query_arg('failed','1',$this->get_return_url($customer_order));
 		$sof_id = 'tcash';
 		
 		$add_info1 = $customer_order->billing_first_name.' '.$customer_order->billing_last_name;
@@ -264,8 +264,6 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
 			// this is important part for empty cart
 			$woocommerce->cart->empty_cart();
 
-			$kode_bayar = add_query_arg(array('payment_code' => $response['payment_code'], 'nm_bank' => $_POST['nm_bank']), $this->get_return_url($customer_order));
-            
             // Redirect to thank you page
 			return array(
 				'result'   => 'success',

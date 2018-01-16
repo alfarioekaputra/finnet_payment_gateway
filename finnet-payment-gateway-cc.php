@@ -166,8 +166,8 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 		// Decide which URL to post to
 		$environment_url = 'https://sandbox.finpay.co.id/servicescode/api/apiFinpay.php';
 
-		$return_url = add_query_arg('utm_nooverride','1',$this->get_return_url($order));
-		$failed_url = add_query_arg('failed','1',$this->get_return_url($order));
+		$return_url = add_query_arg('utm_nooverride','1',$this->get_return_url($customer_order));
+		$failed_url = add_query_arg('failed','1',$this->get_return_url($customer_order));
 		$sof_id = 'cc';
 		
 		$add_info1 = $customer_order->billing_first_name.' '.$customer_order->billing_last_name;
