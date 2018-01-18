@@ -21,9 +21,6 @@ class finnet_payment_kd_bayar extends WC_Payment_Gateway {
 
 		$this->has_fields = true;
 
-		// support default form with credit card
-		//$this->supports = array( 'default_credit_card_form' );
-
 		// setting defines
 		$this->init_form_fields();
 
@@ -45,20 +42,12 @@ class finnet_payment_kd_bayar extends WC_Payment_Gateway {
 		add_action( 'admin_notices', array( $this,	'do_ssl_check' ) );
 		add_action( 'woocommerce_thankyou_custom', array( $this, 'thankyou_page' ) );
 
-		//add_action( 'woocommerce_email_before_order_table', array( $this, 'email_instructions' ), 10, 3 );
-        
 		// Save settings
 		if ( is_admin() ) {
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		}		
 	} // Here is the  End __construct()
 	
-	public function email_instructions( $order, $sent_to_admin, $plain_text = false ) {
-		if ( $this->instructions && ! $sent_to_admin && 'custom' === $order->payment_method && $order->has_status( 'pending-payment' ) ) {
-			echo wpautop( wptexturize( $this->instructions ) ) . PHP_EOL;
-		}
-	}
-    
     /**
      *  There are no payment fields for payu, but we want to show the description if set.
      **/
@@ -163,10 +152,10 @@ class finnet_payment_kd_bayar extends WC_Payment_Gateway {
 
 			return array('result' => 'success');
 		}elseif ($result_code == '05') {
-			// Payment successful
+			// Payment expired
 			$customer_order->add_order_note( __( 'Finnet expired payment.', 'finnet-kode-bayar' ) );
 												 
-			// paid order marked
+			// expired order marked
 			$customer_order->update_status('failed');
 
 			return array('result' => 'success');
@@ -215,7 +204,7 @@ class finnet_payment_kd_bayar extends WC_Payment_Gateway {
 			'trans_date' => $trans_date
 			
 		);
-		//var_dump($customer_orderl);die;
+		
 		// Send this payload to Authorize.net for processing
 		$response = wp_remote_post( $environment_url, array(
 			'method'    => 'POST',
@@ -238,8 +227,6 @@ class finnet_payment_kd_bayar extends WC_Payment_Gateway {
 		
 		$response = json_decode($response_body, true);
 		
-		//$kode_bayar = add_query_arg('payment_code', $response['payment_code'], $this->get_return_url($customer_order));
-		//var_dump($kode_bayar);die;
 		if($response['status_code'] == 00){
 			// Payment successful
 			$customer_order->add_order_note( __( 'Finnet pending payment.', 'finnet-kode-bayar' ) );
@@ -249,16 +236,33 @@ class finnet_payment_kd_bayar extends WC_Payment_Gateway {
 
 			$to_email = $customer_order->billing_email;
 			$headers .= "MIME-Version: 1.0";
-	        $headers .= "Content-Type: text/html; charset=UTF-8";
-			$message = '<b>Silakan ikuti langkah-langkah berikut untuk menyelesaikan pembayaran </b>
-			<ul style="list-style: decimal;">
-				<li>Pilih Menu Bayar / Beli</li>
-				<li>Pilih Menu Telepon / HP </li>
-				<li>Pilih CDMA / Telkom </li>
-				<li>Pilih Telkom / Speedy Vision </li>
-				<li>Masukkan Kode 12 Digit "<span class="nomor_transaksi">'.$response['payment_code'].'</span>" kode pembayaran yang anda dapatkan</li>
-				<li>Pilih YA untuk melanjutkan pembayaran</li>
-			</ul>';
+			$headers .= "Content-Type: text/html; charset=UTF-8";
+			$message = '<div style=" display: block;position: relative;max-width: 50%;min-width: 300px;height: auto;margin: 25px auto;background: #ffffff;box-shadow: 0px 0px 10px #888888;font-family: Lato, sans-serif;font-size: 14px;">
+					<div style=" text-align:center;">
+					<img src="https://www.sarinahonline.co.id/wp-content/uploads/2017/12/sarinah-thewindowofinonesia-02-1.png" style="width:40%; margin: 15px 15px " >
+					</div>    
+					<h2 style="padding: 15px;background: #ff0000;color: #ffffff;text-align: center;border-bottom: 5px solid #cc9933;">
+						Petunjuk Pembayaran
+					</h2>
+						<p style="padding: 15px 5%;color: #333333;">
+							
+							
+							<b>Silakan ikuti langkah-langkah berikut untuk menyelesaikan pembayaran :</b><br>
+							<ul style="list-style:decimal; padding-left: 10%;">
+								<li style="margin-bottom: 10px;color: #333333;"> Pilih Menu Bayar / Beli</li>
+								<li style="margin-bottom: 10px;color: #333333;"> Pilih Menu Telepon / HP</li>
+								<li style="margin-bottom: 10px;color: #333333;"> Pilih CDMA / Telkom</li>
+								<li style="margin-bottom: 10px;color: #333333;"> Pilih Telkom / Speedy Vision</li>
+								<li style="margin-bottom: 10px;color: #333333;"> Masukkan Kode 12 Digit "'.$response['payment_code'].'" kode pembayaran yang anda dapatkan</li>
+								<li style="margin-bottom: 10px;color: #333333;"> Pilih YA untuk melanjutkan pembayaran</li>
+							</ul>
+						</p>
+						<div style="display: block;width: auto;background: #f2f2f2;border-top: 1px solid #eeeeee;padding: 25px 5%;text-align: center;color: #888888;">
+								&copy;2017<a href="https://www.sarinahonline.co.id/" style="color: #888888;"> Sarinah Online.</a> All rights Reserved
+						</div>
+				
+				</div>';
+			
 			wp_mail($to_email, 'Your order is Pending', $message, $headers );
 
 			// this is important part for empty cart

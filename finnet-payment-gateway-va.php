@@ -235,14 +235,33 @@ class finnet_Payment_VA extends WC_Payment_Gateway {
             $headers .= "Content-Type: text/html; charset=UTF-8";
             
             if($sof_id == 'vapermata'){
-                
-			$message = '<b>Silakan ikuti langkah-langkah berikut untuk menyelesaikan pembayaran </b>
-			<ol>
-<li>Silahkan pilih menu <strong>Transaksi Lainnya</strong>. Setelah itu klik menu <strong>Transfer</strong> lalu klik menu<strong> Rek NSB Lain Permata</strong></li>
-<li>Masukkan nomor rekening dengan nomor Virtual Account Anda ('.$response['payment_code'].') dan pilih <strong>Benar</strong></li>
-<li>Kemudian masukkan <strong>jumlah nominal transaksi</strong> sesuai dengan invoice yang ditagihkan pada anda. Setelah itu pilih <strong>Benar</strong></li>
-<li>Lalu <strong>pilih rekening</strong> anda. Tunggu sebentar hingga muncul konfirmasi pembayaran. Kemudian pilih <strong>Ya</strong></li>
-</ol>';
+			
+				$message = '<div style=" display: block;position: relative;max-width: 50%;min-width: 300px;height: auto;margin: 25px auto;background: #ffffff;box-shadow: 0px 0px 10px #888888;font-family: Lato, sans-serif;font-size: 14px;">
+				<div style=" text-align:center;">
+				<img src="https://www.sarinahonline.co.id/wp-content/uploads/2017/12/sarinah-thewindowofinonesia-02-1.png" style="width:40%; margin: 15px 15px " >
+				</div>    
+				<h2 style="padding: 15px;background: #ff0000;color: #ffffff;text-align: center;border-bottom: 5px solid #cc9933;">
+					Petunjuk Pembayaran
+				</h2>
+					<p style="padding: 15px 5%;color: #333333;">
+						
+						
+						<b>Silakan ikuti langkah-langkah berikut untuk menyelesaikan pembayaran :</b><br>
+						<ul style="list-style:decimal; padding-left: 10%;">
+							<li style="margin-bottom: 10px;color: #333333;"> Silahkan pilih menu <strong>Transaksi Lainnya</strong>. Setelah itu klik menu <strong>Transfer</strong> lalu klik menu<strong> Rek NSB Lain Permata</strong></li>
+							<li style="margin-bottom: 10px;color: #333333;"> Masukkan nomor rekening dengan nomor Virtual Account Anda ('.$response['payment_code'].') dan pilih <strong>Benar</strong></li>
+							<li style="margin-bottom: 10px;color: #333333;"> Kemudian masukkan <strong>jumlah nominal transaksi</strong> sesuai dengan invoice yang ditagihkan pada anda. Setelah itu pilih <strong>Benar</strong></li>
+							<li style="margin-bottom: 10px;color: #333333;"> Lalu <strong>pilih rekening</strong> anda. Tunggu sebentar hingga muncul konfirmasi pembayaran. Kemudian pilih <strong>Ya</strong></li>
+							<li style="margin-bottom: 10px;color: #333333;"> Masukkan Kode 12 Digit "'.$response['payment_code'].'" kode pembayaran yang anda dapatkan</li>
+							<li style="margin-bottom: 10px;color: #333333;"> Pilih YA untuk melanjutkan pembayaran</li>
+						</ul>
+					</p>
+					<div style="display: block;width: auto;background: #f2f2f2;border-top: 1px solid #eeeeee;padding: 25px 5%;text-align: center;color: #888888;">
+							&copy;2017<a href="https://www.sarinahonline.co.id/" style="color: #888888;"> Sarinah Online.</a> All rights Reserved
+					</div>
+			
+			</div>';
+			
             }elseif($sof_id == 'vastbni'){
                 $message = '<div class="content-body article-body">
                 <h1>No Virtual Account <b>'.$response['payment_code'].'</b></h1>

@@ -115,7 +115,7 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
 	/**
 	 * Output for the order received page.
 	 */
-	public function thankyou_page($invoice, $failed) {
+	public function thankyou_page($invoice) {
 		global $woocommerce;
         
 		$invoice1 = $invoice;
@@ -131,10 +131,10 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
 
 			return array('result' => 'success');
 		}else {
-			// Payment successful
+			// Payment failed
 			$customer_order->add_order_note( __( 'Finnet expired payment.', 'finnet-tcash' ) );
 												 
-			// paid order marked
+			// failed order marked
 			$customer_order->update_status('failed');
 
 			return array('result' => 'success');
@@ -223,7 +223,6 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
 			
         );
         
-		//var_dump($customer_order->billing_email);die;
 		// Send this payload to Authorize.net for processing
 		$response = wp_remote_post( $environment_url, array(
 			'method'    => 'POST',
@@ -247,7 +246,7 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
 		
 		$response = json_decode($response_body, true);
 		
-		//var_dump($response);die;
+		
 		if($response['status_code'] == '00'){
 			// Payment successful
 			$customer_order->add_order_note( __( 'Finnet pending payment.', 'finnet-tcash' ) );
@@ -275,34 +274,6 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
 		}
 		
 	}
-
-	public function check_order($order_id) {
-		
-		global $woocommerce;
-
-		$order_ref = get_post_meta($order_id, '_telr_ref', true);
-
-		$data = array(
-			'ivp_method'	=> "check",
-			'ivp_store'	=> $this->store_id ,
-			'order_ref'	=> $order_ref,
-			'ivp_authkey'	=> $this->store_secret,
-			);
-
-		$response = $this->api_request($data);
-		var_dump($data);die;
-		$order_status_arr = array(2,3);
-		$transaction_status_arr = array('A', 'H');
-
-		if (array_key_exists("order", $response)) {
-			$order_status = $response['order']['status']['code'];
-			$transaction_status = $response['order']['transaction']['status'];
-			if ( in_array($order_status, $order_status_arr) && in_array($transaction_status, $transaction_status_arr)) {
-				return true;
-			}
-		}
-		return false;
-	}
 	
 	// Validate fields
 	public function validate_fields() {
@@ -320,30 +291,7 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
 }
 
 add_filter( 'woocommerce_payment_gateways', 'gateway_class_tcash' );
-	function gateway_class_tcash( $methods ) {
-		$methods[] = 'finnet_Payment_TCash'; 
-		return $methods;
-	}
-
-	add_action('woocommerce_checkout_process', 'process_custom_payment_tcash');
-	function process_custom_payment_tcash(){
-
-		if($_POST['payment_method'] != 'finnet-tcash')
-			return;
-
-		if( !isset($_POST['nm_bank']) || empty($_POST['nm_bank']) )
-			wc_add_notice( __( 'Please select bank name' ), 'error' );
-
-	}
-
-	/*function order_completed( $order_id ) {
-		$order = new WC_Order( $order_id );
-		$to_email = $order["billing_address"];
-		$headers = 'From: Your Name <your@email.com>' . "\r\n";
-		wp_mail($to_email, 'subject', 'message', $headers );
-
-		
-	
-	}
-	
-	add_action( 'woocommerce_payment_complete', 'order_completed' );*/
+function gateway_class_tcash( $methods ) {
+	$methods[] = 'finnet_Payment_TCash'; 
+	return $methods;
+}

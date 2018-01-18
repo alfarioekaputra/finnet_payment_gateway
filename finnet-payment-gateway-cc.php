@@ -97,14 +97,14 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 	/**
 	 * Output for the order received page.
 	 */
-	public function thankyou_page($invoice, $failed) {
+	public function thankyou_page($data) {
 		global $woocommerce;
         
-		$invoice1 = $invoice;
+		$invoice = $data['invoice'];
+
+		$customer_order = new WC_Order( $invoice );
 		
-		$customer_order = new WC_Order( $invoice1 );
-		
-		if($failed == '0'){
+		if($data['failed'] != 1){
 			// Payment successful
 			$customer_order->add_order_note( __( 'Finnet processing payment cc.', 'finnet-cc' ) );
 												 
@@ -113,10 +113,10 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 
 			return array('result' => 'success');
 		}else {
-			// Payment successful
+			// Payment failed
 			$customer_order->add_order_note( __( 'Finnet failed payment.', 'finnet-cc' ) );
 												 
-			// paid order marked
+			// failed order marked
 			$customer_order->update_status('failed');
 
 			return array('result' => 'success');
@@ -215,7 +215,7 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
         
 			
 		if ( is_wp_error( $response ) ){
-			throw new Exception( __( 'There is issue for connectin payment gateway. Sorry for the inconvenience.', 'finnet-tcash' ) );
+			throw new Exception( __( 'There is issue for connectin payment gateway. Sorry for the inconvenience.', 'finnet-cc' ) );
 		}else{
 			update_post_meta( $order_id, '_finpay_ref_cc', $ref);
 		}
@@ -230,7 +230,7 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 		
 		if($response['status_code'] == '00'){
 			// Payment successful
-			$customer_order->add_order_note( __( 'Finnet pending payment cc.', 'finnet-tcash' ) );
+			$customer_order->add_order_note( __( 'Finnet pending payment cc.', 'finnet-cc' ) );
             
 			// paid order marked
 			$customer_order->update_status('pending-payment');
