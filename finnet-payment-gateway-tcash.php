@@ -115,15 +115,14 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
 	/**
 	 * Output for the order received page.
 	 */
-	public function thankyou_page() {
+	public function thankyou_page($invoice, $failed) {
 		global $woocommerce;
         
-		$invoice = $_POST['invoice'];
-		$result_code = $_POST['result_code'];
+		$invoice1 = $invoice;
 		
-		$customer_order = new WC_Order( $invoice );
+		$customer_order = new WC_Order( $invoice1 );
 		
-		if($result_code == '00'){
+		if($failed == '0'){
 			// Payment successful
 			$customer_order->add_order_note( __( 'Finnet processing payment.', 'finnet-tcash' ) );
 												 
@@ -179,7 +178,7 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
 		// Decide which URL to post to
 		$environment_url = 'https://sandbox.finpay.co.id/servicescode/api/apiFinpay.php';
 
-		$return_url = add_query_arg('utm_nooverride','3',$this->get_return_url($customer_order));
+		$return_url = add_query_arg('utm_nooverride','2',$this->get_return_url($customer_order));
 		$failed_url = add_query_arg('failed','1',$this->get_return_url($customer_order));
 		$sof_id = 'tcash';
 		

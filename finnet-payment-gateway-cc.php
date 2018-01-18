@@ -36,12 +36,7 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
         $this->password			= $this->get_option('password');
         $this->testmode			= $this->get_option('testmode');
             
-        // Actions
-        add_action('woocommerce_update_options_payment_gateways_'.$this->id, array($this, 'process_admin_options'));
-        add_action( 'woocommerce_thankyou', array($this, 'update_order_status'));
-
-       
-		// Turn these settings into variables we can use
+        // Turn these settings into variables we can use
 		foreach ( $this->settings as $setting_key => $value ) {
 			$this->$setting_key = $value;
 		}
@@ -102,15 +97,14 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 	/**
 	 * Output for the order received page.
 	 */
-	public function thankyou_page() {
+	public function thankyou_page($invoice, $failed) {
 		global $woocommerce;
         
-		$invoice = $_POST['invoice'];
-		$result_code = $_POST['result_code'];
+		$invoice1 = $invoice;
 		
-		$customer_order = new WC_Order( $invoice );
+		$customer_order = new WC_Order( $invoice1 );
 		
-		if($result_code == '00'){
+		if($failed == '0'){
 			// Payment successful
 			$customer_order->add_order_note( __( 'Finnet processing payment cc.', 'finnet-cc' ) );
 												 
@@ -120,7 +114,7 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 			return array('result' => 'success');
 		}else {
 			// Payment successful
-			$customer_order->add_order_note( __( 'Finnet expired payment.', 'finnet-cc' ) );
+			$customer_order->add_order_note( __( 'Finnet failed payment.', 'finnet-cc' ) );
 												 
 			// paid order marked
 			$customer_order->update_status('failed');
@@ -219,7 +213,7 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 			'sslverify' => true,
         ) );
         
-
+			
 		if ( is_wp_error( $response ) ){
 			throw new Exception( __( 'There is issue for connectin payment gateway. Sorry for the inconvenience.', 'finnet-tcash' ) );
 		}else{
@@ -259,33 +253,6 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 		
 	}
 
-	public function check_order($order_id) {
-		
-		global $woocommerce;
-
-		$order_ref = get_post_meta($order_id, '_telr_ref', true);
-
-		$data = array(
-			'ivp_method'	=> "check",
-			'ivp_store'	=> $this->store_id ,
-			'order_ref'	=> $order_ref,
-			'ivp_authkey'	=> $this->store_secret,
-			);
-
-		$response = $this->api_request($data);
-		var_dump($data);die;
-		$order_status_arr = array(2,3);
-		$transaction_status_arr = array('A', 'H');
-
-		if (array_key_exists("order", $response)) {
-			$order_status = $response['order']['status']['code'];
-			$transaction_status = $response['order']['transaction']['status'];
-			if ( in_array($order_status, $order_status_arr) && in_array($transaction_status, $transaction_status_arr)) {
-				return true;
-			}
-		}
-		return false;
-	}
 	
 	// Validate fields
 	public function validate_fields() {
