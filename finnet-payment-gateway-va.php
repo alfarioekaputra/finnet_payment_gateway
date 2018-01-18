@@ -63,8 +63,8 @@ class finnet_Payment_VA extends WC_Payment_Gateway {
         if($this -> description) echo wpautop(wptexturize($this -> description));
 		echo '<select id="bank" name="nm_bank">
 					<option>--Select Bank--</option>
-        			<option value="permata">Permata Virtual Account</option>
                     <option value="bni">BNI Virtual Account</option>
+        			<option value="permata">Permata Virtual Account</option>
                 </select>';
       
     }
