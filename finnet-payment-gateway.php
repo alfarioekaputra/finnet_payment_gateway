@@ -4,7 +4,7 @@
 Plugin Name: Finnet Payment Gateway
 Plugin URI: http://www.url.com/
 Description: WooCommerce custom payment gateway integration on finnet.
-Version: 1.5.3
+Version: 1.5.4
 */
 
 add_action( 'plugins_loaded', 'finnet_payment_gateway', 0 );
