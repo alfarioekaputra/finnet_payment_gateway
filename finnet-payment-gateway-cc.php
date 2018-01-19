@@ -75,6 +75,11 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 				'default'	=> __( 'Pembayaran dengan metode Credit Card', 'finnet-cc' ),
 				'css'		=> 'max-width:450px;'
 			),
+			'environtment_url' => array(
+				'title'		=> __( 'Environtment Url', 'finnet-cc' ),
+				'type'		=> 'text',
+				'desc_tip'	=> __( 'Enter your finnet Environtment Url', 'finnet-cc' ),
+			),
 			'merchant_id' => array(
 				'title'		=> __( 'Merchant ID', 'finnet-cc' ),
 				'type'		=> 'text',
@@ -159,7 +164,7 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 		$environment = ( $this->environment == "yes" ) ? 'TRUE' : 'FALSE';
 
 		// Decide which URL to post to
-		$environment_url = 'https://sandbox.finpay.co.id/servicescode/api/apiFinpay.php';
+		$environment_url = $this->environtment_url; //'https://sandbox.finpay.co.id/servicescode/api/apiFinpay.php';
 
 		$return_url = add_query_arg(array('jenis' => 'cc','utm_nooverride'=>'2'),$this->get_return_url($customer_order));
 		$failed_url = add_query_arg('failed','1',$this->get_return_url($customer_order));

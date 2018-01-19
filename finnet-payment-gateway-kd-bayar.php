@@ -28,7 +28,8 @@ class finnet_payment_kd_bayar extends WC_Payment_Gateway {
 		$this->init_settings();
 
 		$this->enabled			= $this->get_option('enabled');
-        $this->title			= $this->get_option('title');
+		$this->title			= $this->get_option('title');
+		$this->environtment_url = $this->get_option('environtment_url');
         $this->merchant_id		= $this->get_option('merchant_id');
         $this->password			= $this->get_option('password');
         $this->testmode			= $this->get_option('testmode');
@@ -112,6 +113,11 @@ class finnet_payment_kd_bayar extends WC_Payment_Gateway {
 				'default'	=> __( 'Pembayaran dengan metode transfer bank', 'finnet-kode-bayar' ),
 				'css'		=> 'max-width:450px;'
 			),
+			'environtment_url' => array(
+				'title'		=> __( 'Environtment Url', 'finnet-cc' ),
+				'type'		=> 'text',
+				'desc_tip'	=> __( 'Enter your finnet Environtment Url', 'finnet-cc' ),
+			),
 			'merchant_id' => array(
 				'title'		=> __( 'Merchant ID', 'finnet-kode-bayar' ),
 				'type'		=> 'text',
@@ -178,7 +184,7 @@ class finnet_payment_kd_bayar extends WC_Payment_Gateway {
 		$environment = ( $this->environment == "yes" ) ? 'TRUE' : 'FALSE';
 
 		// Decide which URL to post to
-		$environment_url = 'https://sandbox.finpay.co.id/servicescode/api/apiFinpay.php';
+		$environment_url = $this->environtment_url;//'https://sandbox.finpay.co.id/servicescode/api/apiFinpay.php';
 
 		
 		$add_info1 = $customer_order->billing_first_name.' '.$customer_order->billing_last_name;

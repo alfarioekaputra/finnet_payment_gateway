@@ -31,7 +31,8 @@ class finnet_Payment_VA extends WC_Payment_Gateway {
         $this->init_settings();
         
         $this->enabled			= $this->get_option('enabled');
-        $this->title			= $this->get_option('title');
+		$this->title			= $this->get_option('title');
+		$this->environtment_url = $this->get_option('environtment_url');
         $this->merchant_id		= $this->get_option('merchant_id');
         $this->password			= $this->get_option('password');
         $this->testmode			= $this->get_option('testmode');
@@ -86,6 +87,11 @@ class finnet_Payment_VA extends WC_Payment_Gateway {
 				'desc_tip'	=> __( 'Payment title of checkout process.', 'finnet-va' ),
 				'default'	=> __( 'Pembayaran dengan metode virtual account', 'finnet-va' ),
 				'css'		=> 'max-width:450px;'
+			),
+			'environtment_url' => array(
+				'title'		=> __( 'Environtment Url', 'finnet-cc' ),
+				'type'		=> 'text',
+				'desc_tip'	=> __( 'Enter your finnet Environtment Url', 'finnet-cc' ),
 			),
 			'merchant_id' => array(
 				'title'		=> __( 'Merchant ID', 'finnet-va' ),
@@ -154,7 +160,7 @@ class finnet_Payment_VA extends WC_Payment_Gateway {
 		$environment = ( $this->environment == "yes" ) ? 'TRUE' : 'FALSE';
 
 		// Decide which URL to post to
-		$environment_url = 'https://sandbox.finpay.co.id/servicescode/api/apiFinpay.php';
+		$environment_url = $this->environtment_url;//'https://sandbox.finpay.co.id/servicescode/api/apiFinpay.php';
 
 		$return_url = add_query_arg(array('utm_nooverride'=>'1', 'jenis' => 'va'),$this->get_return_url($customer_order));
 		//echo $return_url;die;
