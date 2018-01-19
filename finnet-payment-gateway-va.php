@@ -36,19 +36,14 @@ class finnet_Payment_VA extends WC_Payment_Gateway {
         $this->password			= $this->get_option('password');
         $this->testmode			= $this->get_option('testmode');
             
-        // Actions
-        add_action('woocommerce_update_options_payment_gateways_'.$this->id, array($this, 'process_admin_options'));
-        add_action( 'woocommerce_thankyou', array($this, 'update_order_status'));
-
-       
-		// Turn these settings into variables we can use
+        // Turn these settings into variables we can use
 		foreach ( $this->settings as $setting_key => $value ) {
 			$this->$setting_key = $value;
 		}
 		
 		// further check of SSL if you want
 		add_action( 'admin_notices', array( $this,	'do_ssl_check' ) );
-		add_action( 'woocommerce_thankyou_custom', array( $this, 'thankyou_page' ) );
+		add_action( 'woocommerce_thankyou_va', array( $this, 'thankyou_page_va' ) );
         
 		// Save settings
 		if ( is_admin() ) {
@@ -115,7 +110,7 @@ class finnet_Payment_VA extends WC_Payment_Gateway {
 	/**
 	 * Output for the order received page.
 	 */
-	public function thankyou_page() {
+	public function thankyou_page_va() {
 		global $woocommerce;
         
 		$invoice = $_POST['invoice'];
@@ -130,7 +125,9 @@ class finnet_Payment_VA extends WC_Payment_Gateway {
 			// paid order marked
 			$customer_order->update_status('processing');
 
-			return array('result' => 'success');
+			$url = "http://" . $_SERVER['SERVER_NAME']."/return.php";
+ 
+            wp_redirect($url);
 		}elseif ($result_code == '05') {
 			// Payment successful
 			$customer_order->add_order_note( __( 'Finnet expired payment.', 'finnet-va' ) );
@@ -138,7 +135,10 @@ class finnet_Payment_VA extends WC_Payment_Gateway {
 			// paid order marked
 			$customer_order->update_status('failed');
 
-			return array('result' => 'success');
+			$url = "http://" . $_SERVER['SERVER_NAME']."/return.php";
+ 
+            wp_redirect($url);
+
 		}
 	}
     
@@ -156,12 +156,12 @@ class finnet_Payment_VA extends WC_Payment_Gateway {
 		// Decide which URL to post to
 		$environment_url = 'https://sandbox.finpay.co.id/servicescode/api/apiFinpay.php';
 
-		$return_url = add_query_arg('utm_nooverride','1',$this->get_return_url($order));
+		$return_url = add_query_arg(array('utm_nooverride'=>'1', 'jenis' => 'va'),$this->get_return_url($customer_order));
 		//echo $return_url;die;
 		if($_POST['nm_bank'] == 'permata'){
             $sof_id = 'vapermata';
 		}elseif($_POST['nm_bank'] == 'bni'){
-            $sof_id = 'vastbni';
+            $sof_id = 'vabni';
         }
 
 		$add_info1 = $customer_order->billing_first_name.' '.$customer_order->billing_last_name;
@@ -173,7 +173,7 @@ class finnet_Payment_VA extends WC_Payment_Gateway {
         $invoice = $order_id;
         $merchant_id = $this->merchant_id;
         $sof_type = 'pay';
-        $timeout = '43200';
+        $timeout = '2880';
 		$trans_date = date('Ymdhis');
         $password = $this->password;
 
@@ -395,7 +395,7 @@ add_filter( 'woocommerce_payment_gateways', 'gateway_class_va' );
 			wc_add_notice( __( 'Please select bank name' ), 'error' );
 
 	}
-
+	
 	/*function order_completed( $order_id ) {
 		$order = new WC_Order( $order_id );
 		$to_email = $order["billing_address"];

@@ -48,7 +48,7 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
 		
 		// further check of SSL if you want
 		add_action( 'admin_notices', array( $this,	'do_ssl_check' ) );
-		add_action( 'woocommerce_thankyou_custom', array( $this, 'thankyou_page' ) );
+		add_action( 'woocommerce_thankyou_tcash', array( $this, 'thankyou_page_tcash' ) );
         
 		// Save settings
 		if ( is_admin() ) {
@@ -115,7 +115,7 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
 	/**
 	 * Output for the order received page.
 	 */
-	public function thankyou_page($invoice) {
+	public function thankyou_page_tcash($invoice) {
 		global $woocommerce;
         
 		$invoice1 = $invoice;
@@ -178,7 +178,7 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
 		// Decide which URL to post to
 		$environment_url = 'https://sandbox.finpay.co.id/servicescode/api/apiFinpay.php';
 
-		$return_url = add_query_arg('utm_nooverride','2',$this->get_return_url($customer_order));
+		$return_url = add_query_arg(array('utm_nooverride'=>'2', 'jenis' => 'tcash'),$this->get_return_url($customer_order));
 		$failed_url = add_query_arg('failed','1',$this->get_return_url($customer_order));
 		$sof_id = 'tcash';
 		
@@ -194,7 +194,7 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
         $merchant_id = $this->merchant_id;
 		$sof_type = 'pay';
 		$success_url = $return_url;
-        $timeout = '43200';
+        $timeout = '2880';
 		$trans_date = date('Ymdhis');
         $password = $this->password;
 

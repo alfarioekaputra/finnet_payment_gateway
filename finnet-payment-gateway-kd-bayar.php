@@ -40,7 +40,7 @@ class finnet_payment_kd_bayar extends WC_Payment_Gateway {
 		
 		// further check of SSL if you want
 		add_action( 'admin_notices', array( $this,	'do_ssl_check' ) );
-		add_action( 'woocommerce_thankyou_custom', array( $this, 'thankyou_page' ) );
+		add_action( 'woocommerce_thankyou_kdbayar', array( $this, 'thankyou_page_kdbayar' ) );
 
 		// Save settings
 		if ( is_admin() ) {
@@ -135,7 +135,7 @@ class finnet_payment_kd_bayar extends WC_Payment_Gateway {
 	/**
 	 * Output for the order received page.
 	 */
-	public function thankyou_page() {
+	public function thankyou_page_kdbayar() {
 		global $woocommerce;
         
 		$invoice = $_POST['invoice'];
@@ -150,7 +150,9 @@ class finnet_payment_kd_bayar extends WC_Payment_Gateway {
 			// paid order marked
 			$customer_order->update_status('processing');
 
-			return array('result' => 'success');
+			$url = "http://" . $_SERVER['SERVER_NAME']."/return.php";
+ 
+            wp_redirect($url);
 		}elseif ($result_code == '05') {
 			// Payment expired
 			$customer_order->add_order_note( __( 'Finnet expired payment.', 'finnet-kode-bayar' ) );
@@ -158,7 +160,9 @@ class finnet_payment_kd_bayar extends WC_Payment_Gateway {
 			// expired order marked
 			$customer_order->update_status('failed');
 
-			return array('result' => 'success');
+			$url = "http://" . $_SERVER['SERVER_NAME']."/return.php";
+ 
+            wp_redirect($url);
 		}
 	}
     
@@ -181,10 +185,10 @@ class finnet_payment_kd_bayar extends WC_Payment_Gateway {
 		$amount = $customer_order->order_total;
 		$invoice = $order_id;
 		$merchant_id = $this->merchant_id;
-		$return_url = add_query_arg('utm_nooverride','1',$this->get_return_url($order));
+		$return_url = add_query_arg(array('utm_nooverride'=>'1', 'jenis' => 'kdbayar'),$this->get_return_url($customer_order));
 		$sof_id = 'finpay021';
 		$sof_type = 'pay';
-		$timeout = '43200';
+		$timeout = '2880';
 		$trans_date = date('Ymdhis');
 		$password = $this->password;
 		

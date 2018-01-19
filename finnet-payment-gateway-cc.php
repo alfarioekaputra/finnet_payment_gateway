@@ -43,7 +43,7 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 		
 		// further check of SSL if you want
 		add_action( 'admin_notices', array( $this,	'do_ssl_check' ) );
-		add_action( 'woocommerce_thankyou_custom', array( $this, 'thankyou_page' ) );
+		add_action( 'woocommerce_thankyou_cc', array( $this, 'thankyou_page_cc' ) );
         
 		// Save settings
 		if ( is_admin() ) {
@@ -97,7 +97,7 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 	/**
 	 * Output for the order received page.
 	 */
-	public function thankyou_page($data) {
+	public function thankyou_page_cc($data) {
 		global $woocommerce;
         
 		$invoice = $data['invoice'];
@@ -110,7 +110,7 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 												 
 			// paid order marked
 			$customer_order->update_status('processing');
-
+			
 			return array('result' => 'success');
 		}else {
 			// Payment failed
@@ -160,7 +160,7 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 		// Decide which URL to post to
 		$environment_url = 'https://sandbox.finpay.co.id/servicescode/api/apiFinpay.php';
 
-		$return_url = add_query_arg('utm_nooverride','2',$this->get_return_url($customer_order));
+		$return_url = add_query_arg(array('jenis' => 'cc','utm_nooverride'=>'2'),$this->get_return_url($customer_order));
 		$failed_url = add_query_arg('failed','1',$this->get_return_url($customer_order));
 		$sof_id = 'cc';
 		
@@ -176,7 +176,7 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
         $merchant_id = $this->merchant_id;
 		$sof_type = 'pay';
 		$success_url = $return_url;
-        $timeout = '43200';
+        $timeout = '2880';
 		$trans_date = date('Ymdhis');
         $password = $this->password;
 
@@ -225,7 +225,7 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 			
 		// get body response while get not error
 		$response_body = wp_remote_retrieve_body( $response );
-		
+		//var_dump($response_body);die;
 		$response = json_decode($response_body, true);
 		
 		if($response['status_code'] == '00'){
