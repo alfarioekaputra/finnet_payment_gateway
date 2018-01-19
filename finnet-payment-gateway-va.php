@@ -165,9 +165,9 @@ class finnet_Payment_VA extends WC_Payment_Gateway {
         }
 
 		$add_info1 = $customer_order->billing_first_name.' '.$customer_order->billing_last_name;
-		$amount = strtok($customer_order->order_total, '.');;
+		$amount = strtok($customer_order->order_total, '.');
         $cust_email = $customer_order->billing_email;
-        $cust_id = $customer_order->get_customer_id();
+        $cust_id = $customer_order->get_customer_id() ? $customer_order->get_customer_id() : 'guest';
         $cust_msisdn = $customer_order->billing_phone;
         $cust_name = $add_info1;
         $invoice = $order_id;
@@ -336,34 +336,6 @@ class finnet_Payment_VA extends WC_Payment_Gateway {
 		
 	}
 
-	public function check_order($order_id) {
-		
-		global $woocommerce;
-
-		$order_ref = get_post_meta($order_id, '_telr_ref', true);
-
-		$data = array(
-			'ivp_method'	=> "check",
-			'ivp_store'	=> $this->store_id ,
-			'order_ref'	=> $order_ref,
-			'ivp_authkey'	=> $this->store_secret,
-			);
-
-		$response = $this->api_request($data);
-		var_dump($data);die;
-		$order_status_arr = array(2,3);
-		$transaction_status_arr = array('A', 'H');
-
-		if (array_key_exists("order", $response)) {
-			$order_status = $response['order']['status']['code'];
-			$transaction_status = $response['order']['transaction']['status'];
-			if ( in_array($order_status, $order_status_arr) && in_array($transaction_status, $transaction_status_arr)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	// Validate fields
 	public function validate_fields() {
 		return true;

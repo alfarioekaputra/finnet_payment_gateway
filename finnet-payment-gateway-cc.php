@@ -31,7 +31,8 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
         $this->init_settings();
         
         $this->enabled			= $this->get_option('enabled');
-        $this->title			= $this->get_option('title');
+		$this->title			= $this->get_option('title');
+		$this->environtment_url = $this->get_option('environtment_url');
         $this->merchant_id		= $this->get_option('merchant_id');
         $this->password			= $this->get_option('password');
         $this->testmode			= $this->get_option('testmode');
