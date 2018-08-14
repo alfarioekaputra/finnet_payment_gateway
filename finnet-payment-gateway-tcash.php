@@ -191,7 +191,7 @@ class finnet_Payment_TCash extends WC_Payment_Gateway {
 		$add_info1 = $customer_order->billing_first_name.' '.$customer_order->billing_last_name;
 		$amount = strtok($customer_order->order_total, '.');;
         $cust_email = $customer_order->billing_email;
-        $cust_id = $customer_order->get_customer_id();
+        $cust_id = $customer_order->get_customer_id() ? $customer_order->get_customer_id() : 'Guest';
         $cust_msisdn = $customer_order->billing_phone;
 		$cust_name = $add_info1;
 		$failed_url = $failed_url;
