@@ -110,14 +110,17 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 
 		$customer_order = new WC_Order( $invoice );
 		
-		if($data['failed'] != 1){
+		if($data['failed'] == '00'){
 			// Payment successful
 			$customer_order->add_order_note( __( 'Finnet processing payment cc.', 'finnet-cc' ) );
 												 
 			// paid order marked
 			$customer_order->update_status('processing');
 			
-			return array('result' => 'success');
+			//return array('result' => 'success');
+            $url = "http://" . $_SERVER['SERVER_NAME']."/return.php";
+ 
+            wp_redirect($url);
 		}else {
 			// Payment failed
 			$customer_order->add_order_note( __( 'Finnet failed payment.', 'finnet-cc' ) );
@@ -125,7 +128,10 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 			// failed order marked
 			$customer_order->update_status('failed');
 
-			return array('result' => 'success');
+			//return array('result' => 'success');
+            $url = "http://" . $_SERVER['SERVER_NAME']."/return.php";
+ 
+            wp_redirect($url);
 		}
 	}
     
@@ -167,13 +173,14 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 		$environment_url = $this->environtment_url; //'https://sandbox.finpay.co.id/servicescode/api/apiFinpay.php';
 
 		$return_url = add_query_arg(array('jenis' => 'cc','utm_nooverride'=>'2'),$this->get_return_url($customer_order));
-		$failed_url = add_query_arg('failed','1',$this->get_return_url($customer_order));
+		
+		$failed_url = add_query_arg(array('jenis' => 'cc','utm_nooverride'=>'2'),$this->get_return_url($customer_order));
 		$sof_id = 'cc';
 		
 		$add_info1 = $customer_order->billing_first_name.' '.$customer_order->billing_last_name;
 		$amount = strtok($customer_order->order_total, '.');;
         $cust_email = $customer_order->billing_email;
-        $cust_id = $customer_order->get_customer_id();
+        $cust_id = $customer_order->get_customer_id() ? $customer_order->get_customer_id() : 'Guest';
         $cust_msisdn = $customer_order->billing_phone;
 		$cust_name = $add_info1;
 		$failed_url = $failed_url;
@@ -181,7 +188,7 @@ class finnet_Payment_CC extends WC_Payment_Gateway {
 		$items = json_encode($data);
         $merchant_id = $this->merchant_id;
 		$sof_type = 'pay';
-		$success_url = $return_url;
+		$success_url = $this->get_return_url($customer_order);
         $timeout = '2880';
 		$trans_date = date('Ymdhis');
         $password = $this->password;
